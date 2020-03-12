@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +27,7 @@ public class PagamentoController {
     private PagamentoMapper pagamentoMapper;
 
     @PostMapping
-    public ResponseEntity<PagamentoDTO> create(@RequestBody CreatePagamentoDTO createDTO) {
+    public ResponseEntity<PagamentoDTO> create(@Valid @RequestBody CreatePagamentoDTO createDTO) {
         try {
             Pagamento entity = pagamentoService.create(createDTO.getDescricao(), createDTO.getIdCartao(), createDTO.getValor());
             return new ResponseEntity<>(pagamentoMapper.toDTO(entity), HttpStatus.CREATED);

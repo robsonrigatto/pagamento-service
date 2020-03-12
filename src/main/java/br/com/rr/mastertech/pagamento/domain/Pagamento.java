@@ -21,10 +21,12 @@ public class Pagamento {
     @GeneratedValue
     private Integer id;
 
+    @Column(nullable = false)
     private String descricao;
 
-    @Column(name = "ID_CARTAO")
+    @Column(name = "ID_CARTAO", nullable = false)
     private Integer cartaoId;
 
+    @Column(nullable = false)
     private Double valor;
 }
