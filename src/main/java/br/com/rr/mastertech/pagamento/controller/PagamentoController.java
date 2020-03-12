@@ -38,7 +38,7 @@ public class PagamentoController {
 
     @GetMapping("/{idCartao}")
     public ResponseEntity<List<PagamentoDTO>> findAllByIdCartao(@PathVariable Integer idCartao) {
-        List<Pagamento> entities = pagamentoService.findAllByIdCartao(idCartao);
+        List<Pagamento> entities = pagamentoService.findAllByCartaoId(idCartao);
         List<PagamentoDTO> dtos = entities.stream().map(e -> pagamentoMapper.toDTO(e))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
