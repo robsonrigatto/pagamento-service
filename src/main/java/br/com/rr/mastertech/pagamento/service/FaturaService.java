@@ -3,6 +3,7 @@ package br.com.rr.mastertech.pagamento.service;
 import br.com.rr.mastertech.pagamento.client.CartaoClient;
 import br.com.rr.mastertech.pagamento.client.dto.CartaoDTO;
 import br.com.rr.mastertech.pagamento.client.dto.UpdateCartaoDTO;
+import br.com.rr.mastertech.pagamento.client.exception.CartaoOfflineException;
 import br.com.rr.mastertech.pagamento.domain.Fatura;
 import br.com.rr.mastertech.pagamento.domain.Pagamento;
 import br.com.rr.mastertech.pagamento.dto.response.FaturaDTO;
@@ -12,6 +13,7 @@ import br.com.rr.mastertech.pagamento.exception.FaturaSemLancamentosException;
 import br.com.rr.mastertech.pagamento.mapper.FaturaMapper;
 import br.com.rr.mastertech.pagamento.repository.FaturaRepository;
 import br.com.rr.mastertech.pagamento.repository.PagamentoRepository;
+import com.netflix.hystrix.exception.HystrixRuntimeException;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -67,8 +69,11 @@ public class FaturaService {
             updateDTO.setAtivo(false);
             cartaoClient.update(cartaoId, updateDTO);
 
-        } catch (FeignException.FeignClientException.NotFound ex) {
-            throw new CartaoNaoEncontradoException();
+        } catch (HystrixRuntimeException ex) {
+            if(ex.getCause() instanceof FeignException.NotFound) {
+                throw new CartaoNaoEncontradoException();
+            }
+            throw new CartaoOfflineException();
         }
     }
 }

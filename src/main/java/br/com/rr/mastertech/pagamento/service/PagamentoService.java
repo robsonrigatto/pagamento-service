@@ -2,11 +2,13 @@ package br.com.rr.mastertech.pagamento.service;
 
 import br.com.rr.mastertech.pagamento.client.CartaoClient;
 import br.com.rr.mastertech.pagamento.client.dto.CartaoDTO;
+import br.com.rr.mastertech.pagamento.client.exception.CartaoOfflineException;
 import br.com.rr.mastertech.pagamento.domain.Pagamento;
 import br.com.rr.mastertech.pagamento.exception.CartaoInativoException;
 import br.com.rr.mastertech.pagamento.exception.CartaoNaoEncontradoException;
 import br.com.rr.mastertech.pagamento.exception.ClienteNaoVinculadoAoCartaoException;
 import br.com.rr.mastertech.pagamento.repository.PagamentoRepository;
+import com.netflix.hystrix.exception.HystrixRuntimeException;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,8 +33,11 @@ public class PagamentoService {
             Pagamento entity = Pagamento.builder().descricao(descricao).cartaoId(cartao.getId()).valor(valor).build();
             return pagamentoRepository.save(entity);
 
-        } catch (FeignException.FeignClientException.NotFound ex) {
-            throw new CartaoNaoEncontradoException();
+        } catch (HystrixRuntimeException ex) {
+            if(ex.getCause() instanceof FeignException.NotFound) {
+                throw new CartaoNaoEncontradoException();
+            }
+            throw new CartaoOfflineException();
         }
     }
 
@@ -41,8 +46,11 @@ public class PagamentoService {
             CartaoDTO cartao = cartaoClient.findById(cartaoId);
             return pagamentoRepository.findAllByCartaoId(cartao.getClienteId());
 
-        } catch (FeignException.FeignClientException.NotFound ex) {
-            throw new CartaoNaoEncontradoException();
+        } catch (HystrixRuntimeException ex) {
+            if(ex.getCause() instanceof FeignException.NotFound) {
+                throw new CartaoNaoEncontradoException();
+            }
+            throw new CartaoOfflineException();
         }
     }
 
@@ -53,8 +61,11 @@ public class PagamentoService {
 
             return pagamentoRepository.findAllByCartaoId(cartao.getClienteId());
 
-        } catch (FeignException.FeignClientException.NotFound ex) {
-            throw new CartaoNaoEncontradoException();
+        } catch (HystrixRuntimeException ex) {
+            if(ex.getCause() instanceof FeignException.NotFound) {
+                throw new CartaoNaoEncontradoException();
+            }
+            throw new CartaoOfflineException();
         }
     }
 

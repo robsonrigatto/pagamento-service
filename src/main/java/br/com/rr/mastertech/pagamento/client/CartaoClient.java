@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient("cartao")
+@FeignClient(name = "cartao")
 public interface CartaoClient {
 
     @GetMapping("/cartao/id/{id}")
