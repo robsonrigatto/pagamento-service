@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -29,10 +28,10 @@ public class FaturaService {
     private CartaoClient cartaoClient;
 
     @Autowired
-    private FaturaRepository faturaRepository;
+    private FaturaRepository repository;
 
     @Autowired
-    private FaturaMapper faturaMapper;
+    private FaturaMapper mapper;
 
     @Autowired
     private PagamentoRepository pagamentoRepository;
@@ -50,14 +49,12 @@ public class FaturaService {
         if(pagamentos.isEmpty()) throw new FaturaSemLancamentosException();
 
         Double valorPago = pagamentos.stream().reduce(0.0, (a, b) -> a + b.getValor(), Double::sum);
+        Fatura fatura = mapper.toFatura(clienteId, cartaoId, valorPago);
 
-        Fatura fatura = Fatura.builder().clienteId(clienteId).cartaoId(cartaoId)
-                .valorPago(valorPago).dataPagamento(LocalDate.now()).build();
-        fatura = faturaRepository.save(fatura);
-
+        fatura = repository.save(fatura);
         pagamentoRepository.deleteByCartaoId(cartaoId);
 
-        return faturaMapper.toDTO(fatura);
+        return mapper.toFaturaDTO(fatura);
     }
 
     public void expirar(Integer clienteId, Integer cartaoId) {

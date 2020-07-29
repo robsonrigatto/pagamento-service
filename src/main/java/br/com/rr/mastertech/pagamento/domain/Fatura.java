@@ -1,10 +1,5 @@
 package br.com.rr.mastertech.pagamento.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,10 +7,6 @@ import javax.persistence.Id;
 import java.time.LocalDate;
 
 @Entity
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class Fatura {
 
     @Id
@@ -33,4 +24,43 @@ public class Fatura {
     @Column(name = "DATA_PAGAMENTO")
     private LocalDate dataPagamento;
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getCartaoId() {
+        return cartaoId;
+    }
+
+    public void setCartaoId(Integer cartaoId) {
+        this.cartaoId = cartaoId;
+    }
+
+    public Integer getClienteId() {
+        return clienteId;
+    }
+
+    public void setClienteId(Integer clienteId) {
+        this.clienteId = clienteId;
+    }
+
+    public Double getValorPago() {
+        return valorPago;
+    }
+
+    public void setValorPago(Double valorPago) {
+        this.valorPago = valorPago;
+    }
+
+    public LocalDate getDataPagamento() {
+        return dataPagamento;
+    }
+
+    public void setDataPagamento(LocalDate dataPagamento) {
+        this.dataPagamento = dataPagamento;
+    }
 }

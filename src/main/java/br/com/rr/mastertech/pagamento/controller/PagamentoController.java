@@ -30,7 +30,7 @@ public class PagamentoController {
     public ResponseEntity<PagamentoDTO> create(@Valid @RequestBody CreatePagamentoDTO createDTO) {
         try {
             Pagamento entity = pagamentoService.create(createDTO.getDescricao(), createDTO.getIdCartao(), createDTO.getValor());
-            return new ResponseEntity<>(pagamentoMapper.toDTO(entity), HttpStatus.CREATED);
+            return new ResponseEntity<>(pagamentoMapper.toPagamentoDTO(entity), HttpStatus.CREATED);
 
         } catch (FeignException.FeignClientException.NotFound ex) {
             throw new CartaoNaoEncontradoException();
@@ -40,7 +40,7 @@ public class PagamentoController {
     @GetMapping("/{idCartao}")
     public ResponseEntity<List<PagamentoDTO>> findAllByIdCartao(@PathVariable Integer idCartao) {
         List<Pagamento> entities = pagamentoService.findAllByCartaoId(idCartao);
-        List<PagamentoDTO> dtos = entities.stream().map(e -> pagamentoMapper.toDTO(e))
+        List<PagamentoDTO> dtos = entities.stream().map(e -> pagamentoMapper.toPagamentoDTO(e))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
     }

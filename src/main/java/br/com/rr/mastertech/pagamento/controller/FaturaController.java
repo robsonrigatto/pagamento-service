@@ -25,7 +25,7 @@ public class FaturaController {
     @GetMapping("/{clienteId}/{cartaoId}")
     public List<PagamentoDTO> findByClienteAndCartao(@PathVariable Integer clienteId, @PathVariable Integer cartaoId) {
         List<Pagamento> pagamentos = faturaService.getFatura(clienteId, cartaoId);
-        return pagamentos.stream().map(e -> pagamentoMapper.toDTO(e))
+        return pagamentos.stream().map(e -> pagamentoMapper.toPagamentoDTO(e))
                 .collect(Collectors.toList());
     }
 

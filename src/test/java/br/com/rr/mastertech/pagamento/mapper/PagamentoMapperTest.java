@@ -17,10 +17,9 @@ public class PagamentoMapperTest {
 
     @Test
     public void entityToDTOTest() {
-        PagamentoDTO dto = mapper.toDTO(Pagamento.builder()
-                .id(1).descricao("descricao").valor(10.5)
-                .cartaoId(2)
-                .build());
+        Pagamento pagamento = new Pagamento();
+        pagamento.setId(1); pagamento.setDescricao("descricao"); pagamento.setCartaoId(2); pagamento.setValor(10.5);
+        PagamentoDTO dto = mapper.toPagamentoDTO(pagamento);
 
         assertNotNull(dto);
         assertEquals(1, dto.getId());

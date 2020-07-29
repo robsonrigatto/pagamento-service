@@ -7,6 +7,7 @@ import br.com.rr.mastertech.pagamento.domain.Pagamento;
 import br.com.rr.mastertech.pagamento.exception.CartaoInativoException;
 import br.com.rr.mastertech.pagamento.exception.CartaoNaoEncontradoException;
 import br.com.rr.mastertech.pagamento.exception.ClienteNaoVinculadoAoCartaoException;
+import br.com.rr.mastertech.pagamento.mapper.PagamentoMapper;
 import br.com.rr.mastertech.pagamento.repository.PagamentoRepository;
 import com.netflix.hystrix.exception.HystrixRuntimeException;
 import feign.FeignException;
@@ -20,7 +21,10 @@ import java.util.Objects;
 public class PagamentoService {
 
     @Autowired
-    private PagamentoRepository pagamentoRepository;
+    private PagamentoMapper mapper;
+
+    @Autowired
+    private PagamentoRepository repository;
 
     @Autowired
     private CartaoClient cartaoClient;
@@ -30,8 +34,8 @@ public class PagamentoService {
             CartaoDTO cartao = cartaoClient.findById(cartaoId);
             if(!cartao.getAtivo()) throw new CartaoInativoException();
 
-            Pagamento entity = Pagamento.builder().descricao(descricao).cartaoId(cartao.getId()).valor(valor).build();
-            return pagamentoRepository.save(entity);
+            Pagamento entity = mapper.toPagamento(descricao, cartao, valor);
+            return repository.save(entity);
 
         } catch (HystrixRuntimeException ex) {
             if(ex.getCause() instanceof FeignException.NotFound) {
@@ -44,7 +48,7 @@ public class PagamentoService {
     public List<Pagamento> findAllByCartaoId(Integer cartaoId) {
         try {
             CartaoDTO cartao = cartaoClient.findById(cartaoId);
-            return pagamentoRepository.findAllByCartaoId(cartao.getClienteId());
+            return repository.findAllByCartaoId(cartao.getClienteId());
 
         } catch (HystrixRuntimeException ex) {
             if(ex.getCause() instanceof FeignException.NotFound) {
@@ -59,7 +63,7 @@ public class PagamentoService {
             CartaoDTO cartao = cartaoClient.findById(cartaoId);
             if(!Objects.equals(cartao.getClienteId(), clienteId)) throw new ClienteNaoVinculadoAoCartaoException();
 
-            return pagamentoRepository.findAllByCartaoId(cartao.getClienteId());
+            return repository.findAllByCartaoId(cartao.getClienteId());
 
         } catch (HystrixRuntimeException ex) {
             if(ex.getCause() instanceof FeignException.NotFound) {
